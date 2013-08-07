@@ -211,9 +211,6 @@ function main(){
     }
 
     allInfo.sort(sortCredits);
-    //$.writeln(allInfo);
-
-    //NEXT: write user function to sort the text. add tabulators.
 
     //CREATE CREDIT LIST TEXT FRAME
     //find reference text frame
