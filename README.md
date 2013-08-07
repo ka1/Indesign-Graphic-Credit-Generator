@@ -1,7 +1,7 @@
-Adobe InDesign Graphic / Photo Credit Generator
+Adobe InDesign List of Figures
 =================================
 
-Creates a list of all graphics in the document and appends the formatted list in the document.
+Creates a list of figures in the document and appends the formatted list in the document.
 
 Includes the caption number (i.e. "image 15"), the page number (i.e. "page 5) of the image. Reads selected Adobe XMP properties of the graphics:
 - copyright notice
