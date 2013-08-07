@@ -28,14 +28,6 @@ var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
 var langPage = "Seite "; //header of credit text frame
 
-
-
-//~ $.writeln(app.selection[0].appliedObjectStyle.name);
-//~ var test = app.selection[0].graphics[0];
-//~ $.writeln(app.selection[0].graphics[0].itemLink.name);
-//~ $.writeln(app.selection[0]);
-//~ exit();
-
 creditsParagraphStyle = returnParagraphStyleOrCreatenew("Bildnachweis");
 
 if (ask() == true) {
