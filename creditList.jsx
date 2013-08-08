@@ -29,7 +29,7 @@ var divisionAfterParagraphContents = "\t";
 var authorPrefix = "© ";
 var creditsPrefix = ", ";
 var instructionsPrefix = ", ";
-var paragraphContentCharacterLimit = "100"; //TODO: use this
+var paragraphContentCharacterLimit = 0;
 
 var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
@@ -109,7 +109,7 @@ function ask(){
 				with(dialogColumns.add()){
 					staticTexts.add({staticLabel:""});
 					staticTexts.add({staticLabel:""});
-					var dialogParagraphContentCharacterLimit = textEditboxes.add({editContents: checkOrWriteSetting ("paragraphContentCharacterLimit") ? checkOrWriteSetting ("paragraphContentCharacterLimit") : paragraphContentCharacterLimit, minWidth: 50});
+					var dialogParagraphContentCharacterLimit = textEditboxes.add({editContents: checkOrWriteSetting ("paragraphContentCharacterLimit") ? checkOrWriteSetting ("paragraphContentCharacterLimit") : paragraphContentCharacterLimit.toString(), minWidth: 50});
 				}
 			}
 		}
@@ -140,6 +140,7 @@ function ask(){
 	checkOrWriteSetting ("includeAuthor", dialogIncludeAuthor.checkedState == false ? "no" : "yes");
 	checkOrWriteSetting ("includeCredits", dialogIncludeCredits.checkedState == false ? "no" : "yes");
 	checkOrWriteSetting ("includeInstructions", dialogIncludeInstructions.checkedState == false ? "no" : "yes");
+	checkOrWriteSetting ("paragraphContentCharacterLimit", dialogParagraphContentCharacterLimit.editContents);
 
 	//set for runtime
 	captionParagraphStyle = parseParagraphStyleString(myCaptionParagraphStyleString);
@@ -160,6 +161,7 @@ function ask(){
 	includeAuthor = dialogIncludeAuthor.checkedState;
 	includeCredits = dialogIncludeCredits.checkedState;
 	includeInstructions = dialogIncludeInstructions.checkedState;
+	paragraphContentCharacterLimit = parseInt(dialogParagraphContentCharacterLimit.editContents);
 
 	//clear dialog from memory
 	myDialog.destroy();
@@ -248,10 +250,22 @@ function main(){
 					}
 				}
 
+				//safe content string and trim if necessary
+				var contentString;
+				if (writeParagraphContents) {
+					//if the length should be limited and the length exceeds the limit
+					if (paragraphContentCharacterLimit > 0 && currentParagraph.contents.length > paragraphContentCharacterLimit){
+						contentString = currentParagraph.contents.substr(0,paragraphContentCharacterLimit) + "...";
+					} else {
+						contentString = currentParagraph.contents;
+					}
+				}
+				
+				//construct entire line
 				allInfo.push(
 					(writeParagraphNumber ? langCaption + currentParagraph.numberingResultNumber + divisionAfterParagraphNumber : "") +
 					(writePageNumber ? langPage + theParentPage.name + divisionAfterPageNumber : "") +
-					(writeParagraphContents ? currentParagraph.contents + divisionAfterParagraphContents : "") +
+					(writeParagraphContents ? contentString + divisionAfterParagraphContents : "") +
 					(found ? theInfo : "NO IMAGE FOUND") + "");
 			}
 		}
