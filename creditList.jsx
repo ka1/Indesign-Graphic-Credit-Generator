@@ -29,6 +29,7 @@ var divisionAfterParagraphContents = "\t";
 var authorPrefix = "© ";
 var creditsPrefix = ", ";
 var instructionsPrefix = ", ";
+var paragraphContentCharacterLimit = "100"; //TODO: use this
 
 var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
@@ -99,6 +100,16 @@ function ask(){
 					var dialogAuthorPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("authorPrefix") ? checkOrWriteSetting ("authorPrefix") : authorPrefix, minWidth: 100});
 					var dialogCreditsPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("creditsPrefix") ? checkOrWriteSetting ("creditsPrefix") : creditsPrefix, minWidth: 100});
 					var dialogInstructionsPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("instructionsPrefix") ? checkOrWriteSetting ("instructionsPrefix") : instructionsPrefix, minWidth: 100});
+				}
+				with(dialogColumns.add()){
+					staticTexts.add({staticLabel:""});
+					staticTexts.add({staticLabel:""});
+					staticTexts.add({staticLabel:"Character Limit"});
+				}
+				with(dialogColumns.add()){
+					staticTexts.add({staticLabel:""});
+					staticTexts.add({staticLabel:""});
+					var dialogParagraphContentCharacterLimit = textEditboxes.add({editContents: checkOrWriteSetting ("paragraphContentCharacterLimit") ? checkOrWriteSetting ("paragraphContentCharacterLimit") : paragraphContentCharacterLimit, minWidth: 50});
 				}
 			}
 		}
