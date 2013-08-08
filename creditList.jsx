@@ -16,14 +16,20 @@ var numberOfFoundCredits = 0;
 var xmlSettingsTag = 'creditListSettings';
 
 //Settings
-var writeParagraphNumber, writePageNumber, includeAuthor, includeCredits, includeInstructions;
+var writeParagraphNumber, writePageNumber, includeAuthor, includeCredits, includeInstructions, writeParagraphContents;
 var captionParagraphStyleString = "Bildunterschrift"; //default. will be overwritten if set in xml
 var captionedImageObjectStyleString= "Bild Umfluss Bounding Box"; //default. will be overwritten if set in xml
 var pageHeaderParagraphStyleString = "Level \\ Level 1";
 var pageHeaderParagraphStyle; //header paragraph style for credit list
 var captionParagraphStyle;
 var captionedImageObjectStyle;
+var divisionAfterParagraphNumber = "\t";
+var divisionAfterPageNumber = "\t";
+var divisionAfterParagraphContents = "\t";
 var authorPrefix = "© ";
+var creditsPrefix = ", ";
+var instructionsPrefix = ", ";
+
 var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
 var langPage = "Seite "; //header of credit text frame
@@ -52,7 +58,6 @@ function ask(){
 					//paragraph style of header
 					staticTexts.add({staticLabel:"Set Page Header Paragraph Style"});
 					//text
-					staticTexts.add({staticLabel:"Author Prefix"});
 					staticTexts.add({staticLabel:"Page Header"});
 					staticTexts.add({staticLabel:"Caption Number Prefix"});
 					staticTexts.add({staticLabel:"Page Number Prefix"});
@@ -65,20 +70,35 @@ function ask(){
 					//---------------------------------------------
 					//---------------------texts------------------
 					//---------------------------------------------
-					var dialogAuthorPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("authorPrefix") ? checkOrWriteSetting ("authorPrefix") : authorPrefix, minWidth: 180});
 					var dialogLangCreditsName = textEditboxes.add({editContents: checkOrWriteSetting ("langCreditsName") ? checkOrWriteSetting ("langCreditsName") : langCreditsName, minWidth: 180});
 					var dialogLangCaption = textEditboxes.add({editContents: checkOrWriteSetting ("langCaption") ? checkOrWriteSetting ("langCaption") : langCaption, minWidth: 180});
 					var dialogLangPage = textEditboxes.add({editContents: checkOrWriteSetting ("langPage") ? checkOrWriteSetting ("langPage") : langPage, minWidth: 180});
-
-					}
 				}
-				with(borderPanels.add()){
+			}
+			with(borderPanels.add()){
 				with(dialogColumns.add()){
-				var dialogWriteParagraphNumber = checkboxControls.add({staticLabel:"Write paragraph number", checkedState: checkOrWriteSetting ("writeParagraphNumber") == "no" ? false : true});
-				var dialogWritePageNumber = checkboxControls.add({staticLabel:"Write page number", checkedState: checkOrWriteSetting ("writePageNumber") == "no" ? false : true});
-				var dialogIncludeAuthor= checkboxControls.add({staticLabel:"Include author metadata", checkedState: checkOrWriteSetting ("includeAuthor") == "no" ? false : true});
-				var dialogIncludeCredits = checkboxControls.add({staticLabel:"Include credits metadata", checkedState: checkOrWriteSetting ("includeCredits") == "no" ? false : true});
-				var dialogIncludeInstructions = checkboxControls.add({staticLabel:"Include instructions metadata", checkedState: checkOrWriteSetting ("includeInstructions") == "no" ? false : true});
+					var dialogWriteParagraphNumber = checkboxControls.add({staticLabel:"Write paragraph number", checkedState: checkOrWriteSetting ("writeParagraphNumber") == "no" ? false : true});
+					var dialogWritePageNumber = checkboxControls.add({staticLabel:"Write page number", checkedState: checkOrWriteSetting ("writePageNumber") == "no" ? false : true});
+					var dialogWriteParagraphContents = checkboxControls.add({staticLabel:"Write paragraph contents", checkedState: checkOrWriteSetting ("writeParagraphContents") == "no" ? false : true});
+					var dialogIncludeAuthor= checkboxControls.add({staticLabel:"Include author metadata", checkedState: checkOrWriteSetting ("includeAuthor") == "no" ? false : true});
+					var dialogIncludeCredits = checkboxControls.add({staticLabel:"Include credits metadata", checkedState: checkOrWriteSetting ("includeCredits") == "no" ? false : true});
+					var dialogIncludeInstructions = checkboxControls.add({staticLabel:"Include instructions metadata", checkedState: checkOrWriteSetting ("includeInstructions") == "no" ? false : true});
+				}
+				with(dialogColumns.add()){
+					staticTexts.add({staticLabel:"Division after paragraph number"});
+					staticTexts.add({staticLabel:"Division after page number"});
+					staticTexts.add({staticLabel:"Division after paragraph contents"});
+					staticTexts.add({staticLabel:"Author prefix"});
+					staticTexts.add({staticLabel:"credits prefix"});
+					staticTexts.add({staticLabel:"instructions prefix"});
+				}
+				with(dialogColumns.add()){
+					var dialogDivisionAfterParagraphNumber = textEditboxes.add({editContents: checkOrWriteSetting ("divisionAfterParagraphNumber") ? checkOrWriteSetting ("divisionAfterParagraphNumber") : divisionAfterParagraphNumber, minWidth: 100});
+					var dialogDivisionAfterPageNumber = textEditboxes.add({editContents: checkOrWriteSetting ("divisionAfterPageNumber") ? checkOrWriteSetting ("divisionAfterPageNumber") : divisionAfterPageNumber, minWidth: 100});
+					var dialogDivisionAfterParagraphContents = textEditboxes.add({editContents: checkOrWriteSetting ("divisionAfterParagraphContents") ? checkOrWriteSetting ("divisionAfterParagraphContents") : divisionAfterParagraphContents, minWidth: 100});
+					var dialogAuthorPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("authorPrefix") ? checkOrWriteSetting ("authorPrefix") : authorPrefix, minWidth: 100});
+					var dialogCreditsPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("creditsPrefix") ? checkOrWriteSetting ("creditsPrefix") : creditsPrefix, minWidth: 100});
+					var dialogInstructionsPrefix = textEditboxes.add({editContents: checkOrWriteSetting ("instructionsPrefix") ? checkOrWriteSetting ("instructionsPrefix") : instructionsPrefix, minWidth: 100});
 				}
 			}
 		}
@@ -95,11 +115,17 @@ function ask(){
 	checkOrWriteSetting ("captionedImageObjectStyleString", myCaptionedImageObjectStyleString);
 	checkOrWriteSetting ("pageHeaderParagraphStyleString", myPageHeaderParagraphStyleString);
 	checkOrWriteSetting ("authorPrefix", dialogAuthorPrefix.editContents);
+	checkOrWriteSetting ("creditsPrefix", dialogCreditsPrefix.editContents);
+	checkOrWriteSetting ("instructionsPrefix", dialogInstructionsPrefix.editContents);
+	checkOrWriteSetting ("divisionAfterParagraphNumber", dialogDivisionAfterParagraphNumber.editContents);
+	checkOrWriteSetting ("divisionAfterPageNumber", dialogDivisionAfterPageNumber.editContents);
+	checkOrWriteSetting ("divisionAfterParagraphContents", dialogDivisionAfterParagraphContents.editContents);
 	checkOrWriteSetting ("langCreditsName", dialogLangCreditsName.editContents);
 	checkOrWriteSetting ("langCaption", dialogLangCaption.editContents);
 	checkOrWriteSetting ("langPage", dialogLangPage.editContents);
 	checkOrWriteSetting ("writeParagraphNumber", dialogWriteParagraphNumber.checkedState == false ? "no" : "yes");
 	checkOrWriteSetting ("writePageNumber", dialogWritePageNumber.checkedState == false ? "no" : "yes");
+	checkOrWriteSetting ("writeParagraphContents", dialogWriteParagraphContents.checkedState == false ? "no" : "yes");
 	checkOrWriteSetting ("includeAuthor", dialogIncludeAuthor.checkedState == false ? "no" : "yes");
 	checkOrWriteSetting ("includeCredits", dialogIncludeCredits.checkedState == false ? "no" : "yes");
 	checkOrWriteSetting ("includeInstructions", dialogIncludeInstructions.checkedState == false ? "no" : "yes");
@@ -109,11 +135,17 @@ function ask(){
 	captionedImageObjectStyle = parseObjectStyleString(myCaptionedImageObjectStyleString);
 	pageHeaderParagraphStyle = parseParagraphStyleString(myPageHeaderParagraphStyleString);
 	authorPrefix = dialogAuthorPrefix.editContents;
+	creditsPrefix = dialogCreditsPrefix.editContents;
+	instructionsPrefix = dialogInstructionsPrefix.editContents;
+	divisionAfterParagraphNumber = dialogDivisionAfterParagraphNumber.editContents;
+	divisionAfterPageNumber = dialogDivisionAfterPageNumber.editContents;
+	divisionAfterParagraphContents = dialogDivisionAfterParagraphContents.editContents;
 	langCreditsName = dialogLangCreditsName.editContents;
 	langCaption = dialogLangCaption.editContents;
 	langPage = dialogLangPage.editContents;
 	writeParagraphNumber = dialogWriteParagraphNumber.checkedState;
 	writePageNumber = dialogWritePageNumber.checkedState;
+	writeParagraphContents = dialogWriteParagraphContents.checkedState;
 	includeAuthor = dialogIncludeAuthor.checkedState;
 	includeCredits = dialogIncludeCredits.checkedState;
 	includeInstructions = dialogIncludeInstructions.checkedState;
@@ -167,8 +199,8 @@ function main(){
 							//Copyright
 							try{
 								if (includeAuthor)  theInfo += currentGraphic.linkXmp.copyrightNotice ? authorPrefix + toTitleCase(currentGraphic.linkXmp.copyrightNotice) : "";
-								if (includeCredits) theInfo += currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Credit") ? (theInfo ? ", " : "") + currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Credit") : "";
-								if (includeInstructions) theInfo += currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Instructions") ? (theInfo ? ", " : "") + currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Instructions") : "";
+								if (includeCredits) theInfo += currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Credit") ? (theInfo ? creditsPrefix : "") + currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Credit") : "";
+								if (includeInstructions) theInfo += currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Instructions") ? (theInfo ? instructionsPrefix : "") + currentGraphic.linkXmp.getProperty("http://ns.adobe.com/photoshop/1.0/","photoshop:Instructions") : "";
 								numberOfFoundCredits++;
 							}
 							catch(e) {
@@ -204,7 +236,12 @@ function main(){
 						}
 					}
 				}
-				allInfo.push((writeParagraphNumber ? langCaption + currentParagraph.numberingResultNumber + "\t" : "") + (writePageNumber ? langPage + theParentPage.name + "\t" : "") + (found ? theInfo : "NO IMAGE FOUND") + "");
+
+				allInfo.push(
+					(writeParagraphNumber ? langCaption + currentParagraph.numberingResultNumber + divisionAfterParagraphNumber : "") +
+					(writePageNumber ? langPage + theParentPage.name + divisionAfterPageNumber : "") +
+					(writeParagraphContents ? currentParagraph.contents + divisionAfterParagraphContents : "") +
+					(found ? theInfo : "NO IMAGE FOUND") + "");
 			}
 		}
 	}
