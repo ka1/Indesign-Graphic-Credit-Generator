@@ -80,7 +80,7 @@ function ask(){
 				with(dialogColumns.add()){
 					var dialogWriteParagraphNumber = checkboxControls.add({staticLabel:"Write paragraph number", checkedState: checkOrWriteSetting ("writeParagraphNumber") == "no" ? false : true});
 					var dialogWritePageNumber = checkboxControls.add({staticLabel:"Write page number", checkedState: checkOrWriteSetting ("writePageNumber") == "no" ? false : true});
-					var dialogWriteParagraphContents = checkboxControls.add({staticLabel:"Write paragraph contents", checkedState: checkOrWriteSetting ("writeParagraphContents") == "no" ? false : true});
+					var dialogWriteParagraphContents = checkboxControls.add({staticLabel:"Write paragraph contents", checkedState: checkOrWriteSetting ("writeParagraphContents") == "yes" ? true : false});
 					var dialogIncludeAuthor= checkboxControls.add({staticLabel:"Include author metadata", checkedState: checkOrWriteSetting ("includeAuthor") == "no" ? false : true});
 					var dialogIncludeCredits = checkboxControls.add({staticLabel:"Include credits metadata", checkedState: checkOrWriteSetting ("includeCredits") == "no" ? false : true});
 					var dialogIncludeInstructions = checkboxControls.add({staticLabel:"Include instructions metadata", checkedState: checkOrWriteSetting ("includeInstructions") == "no" ? false : true});
