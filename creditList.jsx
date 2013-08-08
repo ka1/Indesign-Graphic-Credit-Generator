@@ -1,4 +1,4 @@
-﻿//Credit List Generator, reading XMP Metadata from all Images. Indesign CS6 or later
+﻿//List of figure generator, reading XMP Metadata from all Images. Indesign CS6 or later
 //(c) 2013 Kai Kasugai
 app.scriptPreferences.version = 8; //8 = Indesign CS6 and later. Use 7.5 to use CS5.5 features
 
@@ -9,7 +9,7 @@ timeStart = new Date().getTime();
 var xTolerance = 10; //maximum offset of the images to the text frame in X
 var yTolerance = 1; //maximum offset of the images to the text frame in Y
 var allInfo = new Array(); //Array with all credits
-var creditsParagraphStyle; //paragraph style for credit list
+var creditsParagraphStyle; //paragraph style for list of figures
 var myCreditsTextFrame; //text frame for credits
 var numberOfImages = 0;
 var numberOfFoundCredits = 0;
@@ -20,7 +20,7 @@ var writeParagraphNumber, writePageNumber, includeAuthor, includeCredits, includ
 var captionParagraphStyleString = "Bildunterschrift"; //default. will be overwritten if set in xml
 var captionedImageObjectStyleString= "Bild Umfluss Bounding Box"; //default. will be overwritten if set in xml
 var pageHeaderParagraphStyleString = "Level \\ Level 1";
-var pageHeaderParagraphStyle; //header paragraph style for credit list
+var pageHeaderParagraphStyle; //header paragraph style for list of figures
 var captionParagraphStyle;
 var captionedImageObjectStyle;
 var divisionAfterParagraphNumber = "\t";
@@ -30,6 +30,12 @@ var authorPrefix = "© ";
 var creditsPrefix = ", ";
 var instructionsPrefix = ", ";
 var paragraphContentCharacterLimit = 0;
+
+//progress bar
+var myProgressPanel;
+var myMaximumValue = 100;
+var myTextFrameTotalValue = 80;
+var myProgressBarWidth = 400;
 
 var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
@@ -41,12 +47,12 @@ if (ask() == true) {
 	main();
 }
 else {
-	alert("Credit list generation canceled. The document was not changed.");
+	alert("List of figure generation canceled. The document was not changed.");
 }
 
 function ask(){
 
-	var myDialog = app.dialogs.add({name:"Credit List", canCancel:true});
+	var myDialog = app.dialogs.add({name:"List of figures", canCancel:true});
 	with(myDialog){
 		//Add a dialog column.
 		with(dialogColumns.add()){
@@ -177,11 +183,24 @@ function ask(){
 
 
 function main(){
+	
+	//Init progress bar
+	myCreateProgressPanel(myMaximumValue, myProgressBarWidth);
+	myProgressPanel.show();
+	myProgressPanel.myProgressBar.value = 0;
+	myProgressPanel.myText.text = "Parsing textframes";
+	
+	
 	//parse ALL TEXTFRAMES
-	for (var i = 0; i < myDocument.textFrames.count(); i++){
-		var currentTextFrame = myDocument.textFrames[i];
+	var totalNumberOfTextFrames = myDocument.textFrames.count();
+	for (var i = 0; i < totalNumberOfTextFrames; i++){
+
+		//progress bar update
+		myProgressPanel.myProgressBar.value += myTextFrameTotalValue / totalNumberOfTextFrames;
+		myProgressPanel.myText.text = "Parsing textframe " + i + " of " + totalNumberOfTextFrames;
 
 		//parse ALL PARAGRAPHS in CURRENT TEXTFRAME
+		var currentTextFrame = myDocument.textFrames[i];
 		for (var p = 0; p < currentTextFrame.paragraphs.count(); p++){
 			var currentParagraph = currentTextFrame.paragraphs[p];
 			//Found a Paragraph with a caption?
@@ -271,9 +290,18 @@ function main(){
 		}
 	}
 
+	//progress bar update
+	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 5;
+	myProgressPanel.myText.text = "Sorting numbers";
+
+	//sort entries
 	allInfo.sort(sortCredits);
 
-	//CREATE CREDIT LIST TEXT FRAME
+	//progress bar update
+	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 10;
+	myProgressPanel.myText.text = "Finding or creating text frame for list of figures";
+
+	//CREATE LIST OF FIGURES TEXT FRAME
 	//find reference text frame
 	for (var i = 0; i < myDocument.pages.count(); i++){
 		for (var j = 0; j < myDocument.pages[i].textFrames.count(); j++){
@@ -299,14 +327,26 @@ function main(){
 		alert("Page " + (newPage.documentOffset+1) + " was created with the textframe for the credits.\n\nIf you want to define your own credits textframe, please create a textframe with the script-label \"creditListTextframe\" (case sensitive!).\n\nThis textframe (and the parent story) will be emptied and filled with references.");
 	}
 
+	//progress bar update
+	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 15;
+	myProgressPanel.myText.text = "Write content to text frame";
+
 	//enter content into frame
 	for(var i = 0; i < allInfo.length; i++){
+		
+		//progress bar update
+		myProgressPanel.myText.text = "Writing info " + (i+1) + " / " + allInfo.length;
+
 		addFormattedTextToStory(myCreditsTextFrame,false, "\r",false);
 		addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i],creditsParagraphStyle);
 		//myCreditsTextFrame.parentStory.insertionPoints.item(-1).contents = SpecialCharacters.COPYRIGHT_SYMBOL;
 	}
 
-
+	//final progress bar update and hide
+	myProgressPanel.myProgressBar.value = myMaximumValue;
+	myProgressPanel.myText.text = "DONE";
+	myProgressPanel.hide();
+	
 	//TIMEs
 	timeEnd = new Date().getTime();
 	alert(
@@ -559,4 +599,15 @@ function parseObjectStyleString(oStyleString){
 		return false;
 	}
 	return style;
+}
+
+//helper to create progress panel
+function myCreateProgressPanel(myMaximumValue, myProgressBarWidth){
+	var test;
+	myProgressPanel = new Window('window', 'creating list of figures');
+	with(myProgressPanel){
+		test = myProgressPanel.myProgressBar = add('progressbar', [12, 12, myProgressBarWidth, 24], 0, myMaximumValue);
+		myProgressPanel.myText = add('statictext', {x:60, y:0, width:myProgressBarWidth, height:20});
+		myText.text = "Starting";
+	}
 }
