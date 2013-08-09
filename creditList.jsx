@@ -13,23 +13,23 @@ var creditsParagraphStyle; //paragraph style for list of figures
 var myCreditsTextFrame; //text frame for credits
 var numberOfImages = 0;
 var numberOfFoundCredits = 0;
-var xmlSettingsTag = 'creditListSettings';
+var xmlSettingsTag = 'creditListSettings'; //all user parameters (see below) will be saved in the document structure with this tag
 
 //Settings
-var writeParagraphNumber, writePageNumber, includeAuthor, includeCredits, includeInstructions, writeParagraphContents;
+var writeParagraphNumber, writePageNumber, includeAuthor, includeCredits, includeInstructions, writeParagraphContents; //booleans
 var captionParagraphStyleString = "Bildunterschrift"; //default. will be overwritten if set in xml
 var captionedImageObjectStyleString= "Bild Umfluss Bounding Box"; //default. will be overwritten if set in xml
-var pageHeaderParagraphStyleString = "Level \\ Level 1";
+var pageHeaderParagraphStyleString = "Level \\ Level 1"; //paragraph style of the page header
 var pageHeaderParagraphStyle; //header paragraph style for list of figures
-var captionParagraphStyle;
-var captionedImageObjectStyle;
-var divisionAfterParagraphNumber = "\t";
-var divisionAfterPageNumber = "\t";
-var divisionAfterParagraphContents = "\t";
-var authorPrefix = "© ";
-var creditsPrefix = ", ";
-var instructionsPrefix = ", ";
-var paragraphContentCharacterLimit = 0;
+var captionParagraphStyle; //paragraph style of the caption underneath the image
+var captionedImageObjectStyle; //object style of the image that has a caption underneath
+var divisionAfterParagraphNumber = "\t"; //separator after the paragraph number
+var divisionAfterPageNumber = "\t"; //sepearator after page number
+var divisionAfterParagraphContents = "\t"; //separator after the paragraph contents
+var authorPrefix = "© "; //prefix before the author
+var creditsPrefix = ", "; //prefix before the contents of the credits meta data
+var instructionsPrefix = ", "; //prefix before the contents of the instructions meta data
+var paragraphContentCharacterLimit = 0; //crop text to x characters
 
 //progress bar
 var myProgressPanel;
@@ -41,8 +41,10 @@ var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
 var langPage = "Seite "; //header of credit text frame
 
+//Select or create paragraph style "Bildnachweis" for all lines in the list of figures
 creditsParagraphStyle = returnParagraphStyleOrCreatenew("Bildnachweis");
 
+//show user dialog and then start main program
 if (ask() == true) {
 	main();
 }
@@ -50,8 +52,8 @@ else {
 	alert("List of figure generation canceled. The document was not changed.");
 }
 
+//user dialog
 function ask(){
-
 	var myDialog = app.dialogs.add({name:"List of figures", canCancel:true});
 	with(myDialog){
 		//Add a dialog column.
@@ -180,7 +182,6 @@ function ask(){
 
 	return true;
 }
-
 
 function main(){
 	
@@ -356,9 +357,9 @@ function main(){
 	);
 }
 
-//----------------------------
+//-----------------------------
 //-------FUNCTIONS-------
-//----------------------------
+//-----------------------------
 
 function sortCredits(x,y){
 	var zahlX = x.match(/^[^0-9]*([0-9]+)/);
