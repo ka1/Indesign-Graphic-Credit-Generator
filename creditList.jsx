@@ -191,6 +191,24 @@ function main(){
 	myProgressPanel.myProgressBar.value = 0;
 	myProgressPanel.myText.text = "Parsing textframes";
 	
+	//CLEAN UP
+	//delete existing hyperlink sources
+	if (myDocument.hyperlinkTextSources.length > 0){
+		for(var i = myDocument.hyperlinkTextSources.length -1; i >= 0; i--){
+			if (myDocument.hyperlinkTextSources[i].label == 'lofLinkSrc'){
+				myDocument.hyperlinkTextSources[i].remove();
+			}
+		}
+	}
+
+	//delete all hyperlink destinations
+	if (myDocument.hyperlinkTextDestinations.length > 0){
+		for (var i = myDocument.hyperlinkTextDestinations.length - 1; i >= 0; i--){
+			if (myDocument.hyperlinkTextDestinations[i].label == 'lofLinkDest') {
+				myDocument.hyperlinkTextDestinations[i].remove();
+			}
+		}
+	}
 	
 	//parse ALL TEXTFRAMES
 	var totalNumberOfTextFrames = myDocument.textFrames.count();
@@ -269,6 +287,20 @@ function main(){
 						}
 					}
 				}
+			
+				var theHyperlinkDestination = null;
+				if (found){
+					//create a hyperlink text destination
+//					theHyperlinkDestination = myDocument.hyperlinkTextDestinations.add(currentParagraph.insertionPoints[-1],{name:"figureRef-" + currentParagraph.numberingResultNumber, label: 'lofLinkDest'});
+					
+//~ 					//add hyperlinks to the reference in the text. for this, select the text first
+//~ 					var myReferenceTagText = currentRefTagXMLElement.characters.itemByRange(currentRefTagXMLElement.insertionPoints.firstItem(),currentRefTagXMLElement.insertionPoints.lastItem());
+//~ 					//if the following line causes an error, maybe there are old textsources in the document. remove them by removing the comment tags around allHyperlinkSources[i].name.match(/ZotRefSrc[0-9]+/i)
+//~ 					var myReferenceSource = myDocument.hyperlinkTextSources.add(myReferenceTagText,{name:"ZotRefSrc" + r, label: "zotrefLinksrc"});
+//~ 					myDocument.hyperlinks.add(myReferenceSource,currentCitekeyItem.hyperlinkTextDestination,{name: r + "_" + currentKey,label:"zotrefHyperlink"});
+
+					
+				}
 
 				//safe content string and trim if necessary
 				var contentString;
@@ -282,11 +314,11 @@ function main(){
 				}
 				
 				//construct entire line
-				allInfo.push(
-					(writeParagraphNumber ? langCaption + currentParagraph.numberingResultNumber + divisionAfterParagraphNumber : "") +
+				var theText = (writeParagraphNumber ? langCaption + currentParagraph.numberingResultNumber + divisionAfterParagraphNumber : "") +
 					(writePageNumber ? langPage + theParentPage.name + divisionAfterPageNumber : "") +
 					(writeParagraphContents ? contentString + divisionAfterParagraphContents : "") +
-					(found ? theInfo : "NO IMAGE FOUND") + "");
+					(found ? theInfo : "NO IMAGE FOUND");
+				allInfo.push({textContents: theText, thisHyperlinkDestination: null});
 			}
 		}
 	}
@@ -339,7 +371,7 @@ function main(){
 		myProgressPanel.myText.text = "Writing info " + (i+1) + " / " + allInfo.length;
 
 		addFormattedTextToStory(myCreditsTextFrame,false, "\r",false);
-		addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i],creditsParagraphStyle);
+		addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i].textContents,creditsParagraphStyle);
 		//myCreditsTextFrame.parentStory.insertionPoints.item(-1).contents = SpecialCharacters.COPYRIGHT_SYMBOL;
 	}
 
@@ -362,9 +394,9 @@ function main(){
 //-----------------------------
 
 function sortCredits(x,y){
-	var zahlX = x.match(/^[^0-9]*([0-9]+)/);
+	var zahlX = x.textContents.match(/^[^0-9]*([0-9]+)/);
 	zahlX = parseInt(zahlX[1]);
-	var zahlY = y.match(/^[^0-9]*([0-9]+)/);
+	var zahlY = y.textContents.match(/^[^0-9]*([0-9]+)/);
 	zahlY = parseInt(zahlY[1]);
 
 	return zahlX > zahlY;
