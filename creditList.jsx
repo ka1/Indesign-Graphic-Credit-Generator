@@ -288,19 +288,16 @@ function main(){
 					}
 				}
 			
-				var theHyperlinkDestination = null;
-				if (found){
-					//create a hyperlink text destination
-//					theHyperlinkDestination = myDocument.hyperlinkTextDestinations.add(currentParagraph.insertionPoints[-1],{name:"figureRef-" + currentParagraph.numberingResultNumber, label: 'lofLinkDest'});
+				//create a hyperlink text destination
+				var theHyperlinkDestination = myDocument.hyperlinkTextDestinations.add(currentParagraph.insertionPoints[-1],{name:"figureRef-" + currentParagraph.numberingResultNumber, label: 'lofLinkDest'});
 					
+				//todo: implement hyperlink sources later, using the field thisHyperlinkDestination of the allinfo object array. move the following code to where the paragraphs are written and adjust
 //~ 					//add hyperlinks to the reference in the text. for this, select the text first
 //~ 					var myReferenceTagText = currentRefTagXMLElement.characters.itemByRange(currentRefTagXMLElement.insertionPoints.firstItem(),currentRefTagXMLElement.insertionPoints.lastItem());
 //~ 					//if the following line causes an error, maybe there are old textsources in the document. remove them by removing the comment tags around allHyperlinkSources[i].name.match(/ZotRefSrc[0-9]+/i)
 //~ 					var myReferenceSource = myDocument.hyperlinkTextSources.add(myReferenceTagText,{name:"ZotRefSrc" + r, label: "zotrefLinksrc"});
 //~ 					myDocument.hyperlinks.add(myReferenceSource,currentCitekeyItem.hyperlinkTextDestination,{name: r + "_" + currentKey,label:"zotrefHyperlink"});
-
 					
-				}
 
 				//safe content string and trim if necessary
 				var contentString;
@@ -318,7 +315,7 @@ function main(){
 					(writePageNumber ? langPage + theParentPage.name + divisionAfterPageNumber : "") +
 					(writeParagraphContents ? contentString + divisionAfterParagraphContents : "") +
 					(found ? theInfo : "NO IMAGE FOUND");
-				allInfo.push({textContents: theText, thisHyperlinkDestination: null});
+				allInfo.push({textContents: theText, thisHyperlinkDestination: theHyperlinkDestination});
 			}
 		}
 	}
