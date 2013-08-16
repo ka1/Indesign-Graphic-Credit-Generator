@@ -288,16 +288,8 @@ function main(){
 					}
 				}
 			
-				//create a hyperlink text destination
+				//create a hyperlink text destination and safe when pushing the info to the array
 				var theHyperlinkDestination = myDocument.hyperlinkTextDestinations.add(currentParagraph.insertionPoints[-1],{name:"figureRef-" + currentParagraph.numberingResultNumber, label: 'lofLinkDest'});
-					
-				//todo: implement hyperlink sources later, using the field thisHyperlinkDestination of the allinfo object array. move the following code to where the paragraphs are written and adjust
-//~ 					//add hyperlinks to the reference in the text. for this, select the text first
-//~ 					var myReferenceTagText = currentRefTagXMLElement.characters.itemByRange(currentRefTagXMLElement.insertionPoints.firstItem(),currentRefTagXMLElement.insertionPoints.lastItem());
-//~ 					//if the following line causes an error, maybe there are old textsources in the document. remove them by removing the comment tags around allHyperlinkSources[i].name.match(/ZotRefSrc[0-9]+/i)
-//~ 					var myReferenceSource = myDocument.hyperlinkTextSources.add(myReferenceTagText,{name:"ZotRefSrc" + r, label: "zotrefLinksrc"});
-//~ 					myDocument.hyperlinks.add(myReferenceSource,currentCitekeyItem.hyperlinkTextDestination,{name: r + "_" + currentKey,label:"zotrefHyperlink"});
-					
 
 				//safe content string and trim if necessary
 				var contentString;
@@ -368,8 +360,17 @@ function main(){
 		myProgressPanel.myText.text = "Writing info " + (i+1) + " / " + allInfo.length;
 
 		addFormattedTextToStory(myCreditsTextFrame,false, "\r",false);
-		addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i].textContents,creditsParagraphStyle);
-		//myCreditsTextFrame.parentStory.insertionPoints.item(-1).contents = SpecialCharacters.COPYRIGHT_SYMBOL;
+		var newLine = addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i].textContents,creditsParagraphStyle);
+
+
+
+
+//todo: implement hyperlink sources later, using the field thisHyperlinkDestination of the allinfo object array. move the following code to where the paragraphs are written and adjust
+		//add hyperlinks to the reference in the text. for this, select the text first
+		//var mySelection = newLine.characters.itemByRange(currentRefTagXMLElement.insertionPoints.firstItem(),currentRefTagXMLElement.insertionPoints.lastItem());
+		//if the following line causes an error, maybe there are old textsources in the document. remove them by removing the comment tags around allHyperlinkSources[i].name.match(/ZotRefSrc[0-9]+/i)
+		var myReferenceSource = myDocument.hyperlinkTextSources.add(newLine,{name:"lofLinkSrc_" + i, label: "lofLinkSrc"});
+		myDocument.hyperlinks.add(myReferenceSource,allInfo[i].thisHyperlinkDestination,{name: "listOfFigures" + i, label:"lofLinkHyperlink"});
 	}
 
 	//final progress bar update and hide
@@ -414,7 +415,7 @@ function addFormattedTextToStory(myTextframe,myFormat,myContent,myParagraphForma
 	if (myParagraphFormat) {
 		myAdditions.appliedParagraphStyle = myParagraphFormat;
 	}
-	return true;
+	return myAdditions;
 }
 
 //return the reference to a paragraph style. if the style did not exist, create the style
