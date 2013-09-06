@@ -41,6 +41,9 @@ var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
 var langPage = "Seite "; //header of credit text frame
 
+//debugging
+var cleanUpAllLinks = false; //if true, all links that are created by this script are deleted in the beginning. otherwise, sources and hyperlinks are implicitly deleted by the emptying of the text frames with the list of figures) 
+
 //Select or create paragraph style "Bildnachweis" for all lines in the list of figures
 creditsParagraphStyle = returnParagraphStyleOrCreatenew("Bildnachweis");
 
@@ -189,27 +192,41 @@ function main(){
 	myCreateProgressPanel(myMaximumValue, myProgressBarWidth);
 	myProgressPanel.show();
 	myProgressPanel.myProgressBar.value = 0;
-	myProgressPanel.myText.text = "Parsing textframes";
+	myProgressPanel.myText.text = "Cleaning up";
 	
 	//CLEAN UP
-	//delete existing hyperlink sources
-	if (myDocument.hyperlinkTextSources.length > 0){
-		for(var i = myDocument.hyperlinkTextSources.length -1; i >= 0; i--){
-			if (myDocument.hyperlinkTextSources[i].label == 'lofLinkSrc'){
-				myDocument.hyperlinkTextSources[i].remove();
-			}
-		}
-	}
-
 	//delete all hyperlink destinations
 	if (myDocument.hyperlinkTextDestinations.length > 0){
 		for (var i = myDocument.hyperlinkTextDestinations.length - 1; i >= 0; i--){
-			if (myDocument.hyperlinkTextDestinations[i].label == 'lofLinkDest') {
+			if (myDocument.hyperlinkTextDestinations[i].label == 'lofLinkDest' || myDocument.hyperlinkTextDestinations[i].name.match(/figureRef-[0-9]+/i)) {
 				myDocument.hyperlinkTextDestinations[i].remove();
 			}
 		}
 	}
+
+	if (cleanUpAllLinks){
+		//delete existing hyperlink sources (this should be unnecessary, as sources should be deleted when emptying the text frames with the list of figures which contain the hyperlink sources)
+		if (myDocument.hyperlinkTextSources.length > 0){
+			for(var i = myDocument.hyperlinkTextSources.length -1; i >= 0; i--){
+				if (myDocument.hyperlinkTextSources[i].label == 'lofLinkSrc'){
+					myDocument.hyperlinkTextSources[i].remove();
+				}
+			}
+		}
+
+		//delete all hyperlinks
+		if (myDocument.hyperlinks.length > 0){
+			for (var i = myDocument.hyperlinks.length - 1; i >= 0; i--){
+				if (myDocument.hyperlinks[i].label == 'lofLinkHyperlink' || myDocument.hyperlinks[i].name.match(/listOfFigures[0-9]+/i)){
+					myDocument.hyperlinks[i].remove();
+				}
+			}
+		}
+	}
 	
+
+	myProgressPanel.myText.text = "Parsing textframes";
+
 	//parse ALL TEXTFRAMES
 	var totalNumberOfTextFrames = myDocument.textFrames.count();
 	for (var i = 0; i < totalNumberOfTextFrames; i++){
@@ -362,14 +379,8 @@ function main(){
 		addFormattedTextToStory(myCreditsTextFrame,false, "\r",false);
 		var newLine = addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i].textContents,creditsParagraphStyle);
 
-
-
-
-//todo: implement hyperlink sources later, using the field thisHyperlinkDestination of the allinfo object array. move the following code to where the paragraphs are written and adjust
-		//add hyperlinks to the reference in the text. for this, select the text first
-		//var mySelection = newLine.characters.itemByRange(currentRefTagXMLElement.insertionPoints.firstItem(),currentRefTagXMLElement.insertionPoints.lastItem());
-		//if the following line causes an error, maybe there are old textsources in the document. remove them by removing the comment tags around allHyperlinkSources[i].name.match(/ZotRefSrc[0-9]+/i)
 		var myReferenceSource = myDocument.hyperlinkTextSources.add(newLine,{name:"lofLinkSrc_" + i, label: "lofLinkSrc"});
+		//if the following line causes an error, FOR SOME REASON it helped, to change the name (like from "listOfFigures-" to "listOfFigures_")
 		myDocument.hyperlinks.add(myReferenceSource,allInfo[i].thisHyperlinkDestination,{name: "listOfFigures" + i, label:"lofLinkHyperlink"});
 	}
 
