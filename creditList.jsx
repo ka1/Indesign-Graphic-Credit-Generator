@@ -192,11 +192,11 @@ function main(){
 	myCreateProgressPanel(myMaximumValue, myProgressBarWidth);
 	myProgressPanel.show();
 	myProgressPanel.myProgressBar.value = 0;
-	myProgressPanel.myText.text = "Cleaning up";
 	
 	//CLEAN UP
 	//delete all hyperlink destinations
 	if (myDocument.hyperlinkTextDestinations.length > 0){
+		myProgressPanel.myText.text = "Cleaning up hyperlink destinations";
 		for (var i = myDocument.hyperlinkTextDestinations.length - 1; i >= 0; i--){
 			if (myDocument.hyperlinkTextDestinations[i].label == 'lofLinkDest' || myDocument.hyperlinkTextDestinations[i].name.match(/figureRef-[0-9]+/i)) {
 				myDocument.hyperlinkTextDestinations[i].remove();
@@ -207,6 +207,7 @@ function main(){
 	if (cleanUpAllLinks){
 		//delete existing hyperlink sources (this should be unnecessary, as sources should be deleted when emptying the text frames with the list of figures which contain the hyperlink sources)
 		if (myDocument.hyperlinkTextSources.length > 0){
+			myProgressPanel.myText.text = "Cleaning up hyperlink text sources";
 			for(var i = myDocument.hyperlinkTextSources.length -1; i >= 0; i--){
 				if (myDocument.hyperlinkTextSources[i].label == 'lofLinkSrc'){
 					myDocument.hyperlinkTextSources[i].remove();
@@ -216,6 +217,7 @@ function main(){
 
 		//delete all hyperlinks
 		if (myDocument.hyperlinks.length > 0){
+			myProgressPanel.myText.text = "Cleaning up hyperlinks";
 			for (var i = myDocument.hyperlinks.length - 1; i >= 0; i--){
 				if (myDocument.hyperlinks[i].label == 'lofLinkHyperlink' || myDocument.hyperlinks[i].name.match(/listOfFigures[0-9]+/i)){
 					myDocument.hyperlinks[i].remove();
@@ -226,7 +228,6 @@ function main(){
 	
 
 	myProgressPanel.myText.text = "Parsing textframes";
-
 	//parse ALL TEXTFRAMES
 	var totalNumberOfTextFrames = myDocument.textFrames.count();
 	for (var i = 0; i < totalNumberOfTextFrames; i++){
@@ -330,14 +331,14 @@ function main(){
 	}
 
 	//progress bar update
-	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 5;
+	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 1;
 	myProgressPanel.myText.text = "Sorting numbers";
 
 	//sort entries
 	allInfo.sort(sortCredits);
 
 	//progress bar update
-	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 10;
+	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 3;
 	myProgressPanel.myText.text = "Finding or creating text frame for list of figures";
 
 	//CREATE LIST OF FIGURES TEXT FRAME
@@ -367,7 +368,7 @@ function main(){
 	}
 
 	//progress bar update
-	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 15;
+	myProgressPanel.myProgressBar.value = myTextFrameTotalValue + 5;
 	myProgressPanel.myText.text = "Write content to text frame";
 
 	//enter content into frame
@@ -375,6 +376,7 @@ function main(){
 		
 		//progress bar update
 		myProgressPanel.myText.text = "Writing info " + (i+1) + " / " + allInfo.length;
+		myProgressPanel.myProgressBar.value += 15 / allInfo.length;
 
 		addFormattedTextToStory(myCreditsTextFrame,false, "\r",false);
 		var newLine = addFormattedTextToStory(myCreditsTextFrame,false, allInfo[i].textContents,creditsParagraphStyle);
