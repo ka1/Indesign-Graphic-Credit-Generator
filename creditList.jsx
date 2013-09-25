@@ -387,7 +387,7 @@ function main(){
 	}
 
 	//add a final line break to avoid hyperlink errors in zotero reference importer (if all image credits end with a citation and there was no linebreak, the script would report an error upon the first run)
-	myCreditsTextFrame.parentStory.contents += "\r";
+	addFormattedTextToStory(myCreditsTextFrame,false, "\r",false);
 
 	//final progress bar update and hide
 	myProgressPanel.myProgressBar.value = myMaximumValue;
