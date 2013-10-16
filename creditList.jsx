@@ -257,8 +257,11 @@ function main(){
 				for (var r = 0; r < theParentPage.rectangles.count(); r++){
 					//see if the object style is correct and the X and Y Positions match within set tolerance
 					currentRectangle = theParentPage.rectangles[r];
+					//does the image style match?
 					if (currentRectangle.appliedObjectStyle == captionedImageObjectStyle) {
+						//is the Y position of the top/bottom +- the tolerance? (do they touch vertically)
 						if (currentRectangle.geometricBounds[2] > topY - yTolerance && currentRectangle.geometricBounds[2] < topY + yTolerance) {
+							//is the left x position +- the tolerance? (do they have a common left x position?)
 							if (currentRectangle.geometricBounds[1] > leftX - xTolerance && currentRectangle.geometricBounds[1] < leftX + xTolerance) {
 							found = true;
 
@@ -273,7 +276,14 @@ function main(){
 								numberOfFoundCredits++;
 							}
 							catch(e) {
-								theInfo += "ERROR RETREIVING METADATA FOR " + currentGraphic.name;
+								//check if there is information in the script label
+								var scriptLabelTest = currentRectangle.label;
+								if (scriptLabelTest.substr(0,11) == "CREDITINFO:") {
+									theInfo = scriptLabelTest.substr(11,);
+									numberOfFoundCredits++;									
+								} else {
+									theInfo += "ERROR RETREIVING METADATA FOR " + currentGraphic.name;
+								}
 							}
 
 							break;
