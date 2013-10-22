@@ -226,6 +226,17 @@ function main(){
 		}
 	}
 	
+	//update links to new files
+	if (myDocument.links.length > 0){
+		myProgressPanel.myText.text = "Updating links to changed files";
+		for(var i = 0; i < myDocument.links.length; i++){
+			if (myDocument.links[i].status == LinkStatus.LINK_OUT_OF_DATE){
+				var currentUpdate = myDocument.links[i];
+				myProgressPanel.myText.text = "Updating link to " + myDocument.links[i].name;
+				myDocument.links[i].update();
+			}
+		}
+	}
 
 	myProgressPanel.myText.text = "Parsing textframes";
 	//parse ALL TEXTFRAMES
