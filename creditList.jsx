@@ -1,6 +1,8 @@
 ﻿//List of figure generator, reading XMP Metadata from all Images. Indesign CS6 or later
 //(c) 2013 Kai Kasugai
 app.scriptPreferences.version = 8; //8 = Indesign CS6 and later. Use 7.5 to use CS5.5 features
+app.scriptPreferences.userInteractionLevel = UserInteractionLevels.INTERACT_WITH_ALL;
+app.scriptPreferences.enableRedraw = true;
 
 var myDocument, timeStart, timeEnd;
 myDocument = app.documents.item(0);
@@ -127,55 +129,55 @@ function ask(){
 	}
 	//Display the dialog box.
 	if(myDialog.show() == true){
-	//Get the value from the dialog box
-	var myCaptionParagraphStyleString = dialogCaptionParagraphStyle.stringList[dialogCaptionParagraphStyle.selectedIndex];
-	var myCaptionedImageObjectStyleString = dialogCaptionedImageObjectStyle.stringList[dialogCaptionedImageObjectStyle.selectedIndex];
-	var myPageHeaderParagraphStyleString = dialogPageHeaderParagraphStyle.stringList[dialogPageHeaderParagraphStyle.selectedIndex];
+		//Get the value from the dialog box
+		var myCaptionParagraphStyleString = dialogCaptionParagraphStyle.stringList[dialogCaptionParagraphStyle.selectedIndex];
+		var myCaptionedImageObjectStyleString = dialogCaptionedImageObjectStyle.stringList[dialogCaptionedImageObjectStyle.selectedIndex];
+		var myPageHeaderParagraphStyleString = dialogPageHeaderParagraphStyle.stringList[dialogPageHeaderParagraphStyle.selectedIndex];
 
-	//write to document xml
-	checkOrWriteSetting ("captionParagraphStyleString", myCaptionParagraphStyleString);
-	checkOrWriteSetting ("captionedImageObjectStyleString", myCaptionedImageObjectStyleString);
-	checkOrWriteSetting ("pageHeaderParagraphStyleString", myPageHeaderParagraphStyleString);
-	checkOrWriteSetting ("authorPrefix", dialogAuthorPrefix.editContents);
-	checkOrWriteSetting ("creditsPrefix", dialogCreditsPrefix.editContents);
-	checkOrWriteSetting ("instructionsPrefix", dialogInstructionsPrefix.editContents);
-	checkOrWriteSetting ("divisionAfterParagraphNumber", dialogDivisionAfterParagraphNumber.editContents);
-	checkOrWriteSetting ("divisionAfterPageNumber", dialogDivisionAfterPageNumber.editContents);
-	checkOrWriteSetting ("divisionAfterParagraphContents", dialogDivisionAfterParagraphContents.editContents);
-	checkOrWriteSetting ("langCreditsName", dialogLangCreditsName.editContents);
-	checkOrWriteSetting ("langCaption", dialogLangCaption.editContents);
-	checkOrWriteSetting ("langPage", dialogLangPage.editContents);
-	checkOrWriteSetting ("writeParagraphNumber", dialogWriteParagraphNumber.checkedState == false ? "no" : "yes");
-	checkOrWriteSetting ("writePageNumber", dialogWritePageNumber.checkedState == false ? "no" : "yes");
-	checkOrWriteSetting ("writeParagraphContents", dialogWriteParagraphContents.checkedState == false ? "no" : "yes");
-	checkOrWriteSetting ("includeAuthor", dialogIncludeAuthor.checkedState == false ? "no" : "yes");
-	checkOrWriteSetting ("includeCredits", dialogIncludeCredits.checkedState == false ? "no" : "yes");
-	checkOrWriteSetting ("includeInstructions", dialogIncludeInstructions.checkedState == false ? "no" : "yes");
-	checkOrWriteSetting ("paragraphContentCharacterLimit", dialogParagraphContentCharacterLimit.editContents);
+		//write to document xml
+		checkOrWriteSetting ("captionParagraphStyleString", myCaptionParagraphStyleString);
+		checkOrWriteSetting ("captionedImageObjectStyleString", myCaptionedImageObjectStyleString);
+		checkOrWriteSetting ("pageHeaderParagraphStyleString", myPageHeaderParagraphStyleString);
+		checkOrWriteSetting ("authorPrefix", dialogAuthorPrefix.editContents);
+		checkOrWriteSetting ("creditsPrefix", dialogCreditsPrefix.editContents);
+		checkOrWriteSetting ("instructionsPrefix", dialogInstructionsPrefix.editContents);
+		checkOrWriteSetting ("divisionAfterParagraphNumber", dialogDivisionAfterParagraphNumber.editContents);
+		checkOrWriteSetting ("divisionAfterPageNumber", dialogDivisionAfterPageNumber.editContents);
+		checkOrWriteSetting ("divisionAfterParagraphContents", dialogDivisionAfterParagraphContents.editContents);
+		checkOrWriteSetting ("langCreditsName", dialogLangCreditsName.editContents);
+		checkOrWriteSetting ("langCaption", dialogLangCaption.editContents);
+		checkOrWriteSetting ("langPage", dialogLangPage.editContents);
+		checkOrWriteSetting ("writeParagraphNumber", dialogWriteParagraphNumber.checkedState == false ? "no" : "yes");
+		checkOrWriteSetting ("writePageNumber", dialogWritePageNumber.checkedState == false ? "no" : "yes");
+		checkOrWriteSetting ("writeParagraphContents", dialogWriteParagraphContents.checkedState == false ? "no" : "yes");
+		checkOrWriteSetting ("includeAuthor", dialogIncludeAuthor.checkedState == false ? "no" : "yes");
+		checkOrWriteSetting ("includeCredits", dialogIncludeCredits.checkedState == false ? "no" : "yes");
+		checkOrWriteSetting ("includeInstructions", dialogIncludeInstructions.checkedState == false ? "no" : "yes");
+		checkOrWriteSetting ("paragraphContentCharacterLimit", dialogParagraphContentCharacterLimit.editContents);
 
-	//set for runtime
-	captionParagraphStyle = parseParagraphStyleString(myCaptionParagraphStyleString);
-	captionedImageObjectStyle = parseObjectStyleString(myCaptionedImageObjectStyleString);
-	pageHeaderParagraphStyle = parseParagraphStyleString(myPageHeaderParagraphStyleString);
-	authorPrefix = dialogAuthorPrefix.editContents;
-	creditsPrefix = dialogCreditsPrefix.editContents;
-	instructionsPrefix = dialogInstructionsPrefix.editContents;
-	divisionAfterParagraphNumber = dialogDivisionAfterParagraphNumber.editContents;
-	divisionAfterPageNumber = dialogDivisionAfterPageNumber.editContents;
-	divisionAfterParagraphContents = dialogDivisionAfterParagraphContents.editContents;
-	langCreditsName = dialogLangCreditsName.editContents;
-	langCaption = dialogLangCaption.editContents;
-	langPage = dialogLangPage.editContents;
-	writeParagraphNumber = dialogWriteParagraphNumber.checkedState;
-	writePageNumber = dialogWritePageNumber.checkedState;
-	writeParagraphContents = dialogWriteParagraphContents.checkedState;
-	includeAuthor = dialogIncludeAuthor.checkedState;
-	includeCredits = dialogIncludeCredits.checkedState;
-	includeInstructions = dialogIncludeInstructions.checkedState;
-	paragraphContentCharacterLimit = parseInt(dialogParagraphContentCharacterLimit.editContents);
+		//set for runtime
+		captionParagraphStyle = parseParagraphStyleString(myCaptionParagraphStyleString);
+		captionedImageObjectStyle = parseObjectStyleString(myCaptionedImageObjectStyleString);
+		pageHeaderParagraphStyle = parseParagraphStyleString(myPageHeaderParagraphStyleString);
+		authorPrefix = dialogAuthorPrefix.editContents;
+		creditsPrefix = dialogCreditsPrefix.editContents;
+		instructionsPrefix = dialogInstructionsPrefix.editContents;
+		divisionAfterParagraphNumber = dialogDivisionAfterParagraphNumber.editContents;
+		divisionAfterPageNumber = dialogDivisionAfterPageNumber.editContents;
+		divisionAfterParagraphContents = dialogDivisionAfterParagraphContents.editContents;
+		langCreditsName = dialogLangCreditsName.editContents;
+		langCaption = dialogLangCaption.editContents;
+		langPage = dialogLangPage.editContents;
+		writeParagraphNumber = dialogWriteParagraphNumber.checkedState;
+		writePageNumber = dialogWritePageNumber.checkedState;
+		writeParagraphContents = dialogWriteParagraphContents.checkedState;
+		includeAuthor = dialogIncludeAuthor.checkedState;
+		includeCredits = dialogIncludeCredits.checkedState;
+		includeInstructions = dialogIncludeInstructions.checkedState;
+		paragraphContentCharacterLimit = parseInt(dialogParagraphContentCharacterLimit.editContents);
 
-	//clear dialog from memory
-	myDialog.destroy();
+		//clear dialog from memory
+		myDialog.destroy();
 
 	}
 	else{
