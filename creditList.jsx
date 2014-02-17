@@ -267,6 +267,12 @@ function main(){
 				var theInfo;
 
 				//parse ALL RECTANGLES on CURRENT PAGE
+				if (theParentPage == null){
+					app.activeWindow.activeSpread = currentTextFrame.parent;
+					myDocument.selection = Array(theParentTextFrame);
+					alert("Error on spread " + currentTextFrame.parent.index + ". Terminating script.");
+					exit();
+				}
 				for (var r = 0; r < theParentPage.rectangles.count(); r++){
 					//see if the object style is correct and the X and Y Positions match within set tolerance
 					currentRectangle = theParentPage.rectangles[r];
