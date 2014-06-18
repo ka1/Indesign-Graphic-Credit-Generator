@@ -42,6 +42,7 @@ var myProgressBarWidth = 400;
 var langCreditsName = "Bildnachweis"; //header of credit text frame
 var langCaption = "Abbildung "; //header of credit text frame
 var langPage = "Seite "; //header of credit text frame
+var scanOffsetX = 0; //scan for image at a certain X offset from caption (right is positive, left is negative). 0 for no offset.
 
 //debugging
 var cleanUpAllLinks = false; //if true, all links that are created by this script are deleted in the beginning. otherwise, sources and hyperlinks are implicitly deleted by the emptying of the text frames with the list of figures) 
@@ -75,6 +76,8 @@ function ask(){
 					staticTexts.add({staticLabel:"Page Header"});
 					staticTexts.add({staticLabel:"Caption Number Prefix"});
 					staticTexts.add({staticLabel:"Page Number Prefix"});
+					staticTexts.add({staticLabel:"Scan Offset X"});
+					staticTexts.add({staticLabel:"Tolerance X"});
 				}
 				with(dialogColumns.add()){
 					var dialogCaptionParagraphStyle = dropdowns.add(createDialogDropDownParagraphs(captionParagraphStyleString, "captionParagraphStyleString"));
@@ -87,6 +90,8 @@ function ask(){
 					var dialogLangCreditsName = textEditboxes.add({editContents: checkOrWriteSetting ("langCreditsName") ? checkOrWriteSetting ("langCreditsName") : langCreditsName, minWidth: 180});
 					var dialogLangCaption = textEditboxes.add({editContents: checkOrWriteSetting ("langCaption") ? checkOrWriteSetting ("langCaption") : langCaption, minWidth: 180});
 					var dialogLangPage = textEditboxes.add({editContents: checkOrWriteSetting ("langPage") ? checkOrWriteSetting ("langPage") : langPage, minWidth: 180});
+					var dialogScanOffsetX = textEditboxes.add({editContents: checkOrWriteSetting ("scanOffsetX") ? checkOrWriteSetting ("scanOffsetX") : scanOffsetX.toString(), minWidth: 180});
+					var dialogXTolerance = textEditboxes.add({editContents: checkOrWriteSetting ("xTolerance") ? checkOrWriteSetting ("xTolerance") : xTolerance.toString(), minWidth: 180});
 				}
 			}
 			with(borderPanels.add()){
@@ -147,6 +152,8 @@ function ask(){
 		checkOrWriteSetting ("langCreditsName", dialogLangCreditsName.editContents);
 		checkOrWriteSetting ("langCaption", dialogLangCaption.editContents);
 		checkOrWriteSetting ("langPage", dialogLangPage.editContents);
+		checkOrWriteSetting ("scanOffsetX", dialogScanOffsetX.editContents);
+		checkOrWriteSetting ("xTolerance", dialogXTolerance.editContents);
 		checkOrWriteSetting ("writeParagraphNumber", dialogWriteParagraphNumber.checkedState == false ? "no" : "yes");
 		checkOrWriteSetting ("writePageNumber", dialogWritePageNumber.checkedState == false ? "no" : "yes");
 		checkOrWriteSetting ("writeParagraphContents", dialogWriteParagraphContents.checkedState == false ? "no" : "yes");
@@ -168,6 +175,8 @@ function ask(){
 		langCreditsName = dialogLangCreditsName.editContents;
 		langCaption = dialogLangCaption.editContents;
 		langPage = dialogLangPage.editContents;
+		scanOffsetX = parseInt(dialogScanOffsetX.editContents);
+		xTolerance = parseInt(dialogXTolerance.editContents);
 		writeParagraphNumber = dialogWriteParagraphNumber.checkedState;
 		writePageNumber = dialogWritePageNumber.checkedState;
 		writeParagraphContents = dialogWriteParagraphContents.checkedState;
@@ -281,7 +290,8 @@ function main(){
 						//is the Y position of the top/bottom +- the tolerance? (do they touch vertically)
 						if (currentRectangle.geometricBounds[2] > topY - yTolerance && currentRectangle.geometricBounds[2] < topY + yTolerance) {
 							//is the left x position +- the tolerance? (do they have a common left x position?)
-							if (currentRectangle.geometricBounds[1] > leftX - xTolerance && currentRectangle.geometricBounds[1] < leftX + xTolerance) {
+							//also, calculate in the xoffset (subtract from image, because a positive x offset means that the caption will be in a negative relative position from image)
+							if (currentRectangle.geometricBounds[1] - scanOffsetX > leftX - xTolerance && currentRectangle.geometricBounds[1] - scanOffsetX < leftX + xTolerance) {
 							found = true;
 
 							currentGraphic = currentRectangle.graphics[0].itemLink;
@@ -319,7 +329,7 @@ function main(){
 						currentGroup = theParentPage.groups[r];
 						if (currentGroup.appliedObjectStyle == captionedImageObjectStyle) {
 							if (currentGroup.geometricBounds[2] > topY - yTolerance && currentGroup.geometricBounds[2] < topY + yTolerance) {
-								if (currentGroup.geometricBounds[1] > leftX - xTolerance && currentGroup.geometricBounds[1] < leftX + xTolerance) {
+								if (currentGroup.geometricBounds[1] - scanOffsetX > leftX - xTolerance && currentGroup.geometricBounds[1] - scanOffsetX < leftX + xTolerance) {
 									found = true;
 									theInfo = currentGroup.label;
 
