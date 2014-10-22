@@ -37,3 +37,7 @@ supported image file formats
 --------------------
 All file formats that are supported by Adobe Indesign which support IPTC headers should be compatible with this script.
 Thus far I used it with JPG, PNG, TIFF, PDF and AI
+
+installation
+--------------------
+Please google for "indesign script installation" to see where the script file (creditList.jsx) is to be copied to.
